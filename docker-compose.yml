@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: django_jobs
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0
+    container_name: keycloak
+    restart: always
+    command: ["start-dev"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/django_jobs
+      KC_DB_PORT: 5432
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"   # RabbitMQ service
+      - "15672:15672" # Management UI
+
+  django:
+    build: .
+    container_name: django_app
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - keycloak
+      - rabbitmq
+    volumes:
+      - .:/app
+
+  celery_worker:
+    build: .
+    command: celery -A DjangoJobs worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - django
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:
