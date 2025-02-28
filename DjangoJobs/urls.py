@@ -30,7 +30,7 @@ schema_view = get_schema_view(
         default_version='v1',
         description="API for managing candidates and resumes",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@yourdomain.com"),
+        contact=openapi.Contact(email="mhmdfrj.97@gmail.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
