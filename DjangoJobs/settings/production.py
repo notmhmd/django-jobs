@@ -8,6 +8,10 @@ SECURE_SSL_REDIRECT = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
+MEDIA_ROOT = '/app/media/'
+MEDIA_URL = '/media/'
+
+
 USE_AWS = os.getenv("USE_AWS", "False") == "True"
 USE_GCS = os.getenv("USE_GCS", "False") == "True"
 

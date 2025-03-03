@@ -49,7 +49,6 @@ urlpatterns = [
 
 if settings.DJANGO_ENV == 'development':
     import debug_toolbar
-
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),  # Correct URL pattern
     ]
