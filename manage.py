@@ -10,8 +10,10 @@ def main():
     # Set environment-specific settings based on DJANGO_ENV
     if os.getenv('DJANGO_ENV') == 'production':
         os.environ['DJANGO_SETTINGS_MODULE'] = 'DjangoJobs.settings.production'
-    else:
+    elif os.getenv('DJANGO_ENV') == 'development':
         os.environ['DJANGO_SETTINGS_MODULE'] = 'DjangoJobs.settings.development'
+    elif os.getenv('DJANGO_ENV') == 'testing':
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'DjangoJobs.settings.test'
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

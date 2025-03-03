@@ -14,7 +14,7 @@ class CandidateModelTest(TestCase):
 
     def setUp(self):
         self.candidate = Candidate.objects.create(
-            full_name="John Doe",
+            full_name="John Test Doe",
             date_of_birth=date(1990, 5, 15),
             years_of_experience=5,
             department="IT",
@@ -22,7 +22,7 @@ class CandidateModelTest(TestCase):
         )
 
     def test_candidate_creation(self):
-        self.assertEqual(self.candidate.full_name, "John Doe")
+        self.assertEqual(self.candidate.full_name, "John Test Doe")
         self.assertEqual(self.candidate.years_of_experience, 5)
         self.assertEqual(self.candidate.department, "IT")
 
@@ -38,7 +38,7 @@ class CandidateAPITest(TestCase):
         self.client = APIClient()
         self.user = {"username": "johndoe", "resource_access": {"realm-management": {"roles": ["view-users"]}}}
         self.candidate = Candidate.objects.create(
-            full_name="Jane Doe",
+            full_name="Jane Testing Doe",
             date_of_birth="1992-08-10",
             years_of_experience=3,
             department="HR",
@@ -47,11 +47,11 @@ class CandidateAPITest(TestCase):
         )
 
         self.candidate_no_resume = Candidate.objects.create(
-            full_name="John Doe",
+            full_name="John No Resume Doe",
             date_of_birth="1992-08-10",
             years_of_experience=3,
             department="HR",
-            email="johndoes@example.com",
+            email="johndoe1@example.com",
         )
 
     def test_list_candidates(self):
@@ -63,7 +63,8 @@ class CandidateAPITest(TestCase):
         self.assertIsInstance(response.json().get("results"), list)
 
     @patch('candidate.views.magic.Magic')
-    def test_create_candidate_valid(self, MockMagic):
+    @patch('candidate.tasks.register_candidate_task.delay')  # Mock the Celery task
+    def test_create_candidate_valid(self, mock_register_candidate_task, MockMagic):
         MockMagic.return_value.from_buffer.return_value = "application/pdf"
         url = reverse("candidate-register")
         data = {
@@ -71,13 +72,14 @@ class CandidateAPITest(TestCase):
             "date_of_birth": "1990-05-15",
             "years_of_experience": 5,
             "department": "IT",
-            "email": "johndoe@exampless.com",
+            "email": "johndoe6@example.com",
             "resume": SimpleUploadedFile("resume.pdf", b"Dummy resume content", content_type="application/pdf"),
         }
         response = self.client.post(url, data, format="multipart")
 
+        mock_register_candidate_task.assert_called()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data["email"], "johndoe@exampless.com")
+        self.assertEqual(response.data["email"], "johndoe6@example.com")
 
     @patch('candidate.views.magic.Magic')
     def test_create_candidate_invalid_file_type(self, MockMagic):

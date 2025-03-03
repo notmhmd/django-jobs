@@ -1,0 +1,28 @@
+name: Django CD Pipeline
+
+on:
+  repository_dispatch:
+    types: [deploy]
+
+jobs:
+  deploy:
+    name: Deploy to AWS EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          echo "${{ secrets.AWS_EC2_SSH_KEY }}" > deploy_key.pem
+          chmod 600 deploy_key.pem
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i deploy_key.pem ${{ secrets.AWS_EC2_USER }}@${{ secrets.AWS_EC2_HOST }} <<EOF
+            cd /path/to/your/project
+            git pull origin main
+            docker compose pull
+            docker compose up -d --force-recreate
+          EOF
