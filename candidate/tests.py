@@ -1,5 +1,5 @@
 from datetime import date
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -138,7 +138,18 @@ class CandidateAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("resume", response.data)
 
-    def test_resume_download_view(self):
+    @patch('common.auth.requests.get')
+    @patch('django.core.cache.cache.get')
+    def test_resume_download_view(self, mock_cache_get, mock_requests_get):
+        mock_cache_get.return_value = {
+            "sub": "mock_user_id",
+            "email": "test.user@example.com"
+        }
+        mock_requests_get.return_value = MagicMock(status_code=200, json=lambda: {
+            "sub": "mock_user_id",
+            "email": "test.user@example.com"
+        })
+
         self.client.force_authenticate(user=self.user)
         url = reverse("resume-download", kwargs={"pk": self.candidate.id})
         response = self.client.get(url)
@@ -148,13 +159,17 @@ class CandidateAPITest(TestCase):
         response_no_resume = self.client.get(url_no_resume)
         self.assertEqual(response_no_resume.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_invalid_token(self):
+    @patch('common.auth.requests.get')
+    def test_invalid_token(self, mock_requests_get):
+        mock_requests_get.return_value = MagicMock(status_code=403)
         self.client.defaults["HTTP_AUTHORIZATION"] = "Bearer invalidtoken"
         url = reverse("candidate-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_missing_token(self):
+    @patch('common.auth.requests.get')
+    def test_missing_token(self, mock_requests_get):
+        mock_requests_get.return_value = MagicMock(status_code=403)
         url = reverse("candidate-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
