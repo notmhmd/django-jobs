@@ -45,8 +45,7 @@ services:
       - "15672:15672" # Management UI
 
   django:
-    build: .
-    container_name: django_app
+    image: ${DOCKER_USERNAME:-notmhmdz}/django_jobs:latest
     restart: always
     env_file:
       - .env
@@ -60,7 +59,7 @@ services:
       - .:/app
 
   celery_worker:
-    build: .
+    image: ${DOCKER_USERNAME:-notmhmdz}/django_jobs:latest
     command: celery -A DjangoJobs worker --loglevel=info
     volumes:
       - .:/app
