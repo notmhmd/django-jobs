@@ -28,7 +28,7 @@ class Candidate(TimeStampedModel):
     full_name = models.CharField(max_length=255)
     date_of_birth = models.DateField()
     years_of_experience = models.PositiveIntegerField()
-    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES)
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, db_index=True )
     resume = models.FileField(upload_to=resume_upload_path, storage=get_class())
     auth_id = models.UUIDField(default=None, editable=False, null=True)
     email = models.EmailField(unique=True, default=None, null=True)

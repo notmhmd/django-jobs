@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 DjangoJobs.wsgi:application"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn DjangoJobs.wsgi:application --workers=10 --threads=5 --bind 0.0.0.0:8000"]

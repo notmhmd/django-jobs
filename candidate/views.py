@@ -32,8 +32,8 @@ class CandidateRegisterView(generics.CreateAPIView):
     def perform_create(self, serializer):
         file = self.request.FILES.get("resume")
 
-        # Validate File Type
         mime = magic.Magic(mime=True)
+        file.seek(0)
         file_mime = mime.from_buffer(file.read(2048))
         file.seek(0)
 
