@@ -44,11 +44,11 @@ router = DefaultRouter()
 urlpatterns = [
     # path("admin/", admin.site.urls),
     path("api/candidates/", include("candidate.urls")),
-    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-docs') if settings.DJANGO_ENV == 'development' else None,
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DJANGO_ENV == 'development':
     import debug_toolbar
     urlpatterns += [
-        path("__debug__/", include(debug_toolbar.urls)),  # Correct URL pattern
+        path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-docs'),
+        path("__debug__/", include(debug_toolbar.urls)),
     ]
