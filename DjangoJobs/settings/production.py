@@ -4,9 +4,9 @@ DEBUG = False
 ALLOWED_HOSTS = ['ec2-3-86-2-46.compute-1.amazonaws.com']
 
 
-SECURE_SSL_REDIRECT = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 MEDIA_ROOT = '/app/media/'
 MEDIA_URL = '/media/'
