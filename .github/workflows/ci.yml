@@ -31,7 +31,7 @@ jobs:
       - name: Run Tests with SQLite
         run: |
           source venv/bin/activate
-          python manage.py test --settings=django_jobs.settings.test
+          python manage.py test --settings=DjangoJobs.settings.test
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
