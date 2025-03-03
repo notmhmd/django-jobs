@@ -1,9 +1,7 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['']
-
-DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+ALLOWED_HOSTS = ['ec2-3-86-2-46.compute-1.amazonaws.com']
 
 
 SECURE_SSL_REDIRECT = True
