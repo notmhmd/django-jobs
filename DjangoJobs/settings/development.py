@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'ec2-3-86-2-46.compute-1.amazonaws.com']
 
 INSTALLED_APPS += [
     'debug_toolbar',
